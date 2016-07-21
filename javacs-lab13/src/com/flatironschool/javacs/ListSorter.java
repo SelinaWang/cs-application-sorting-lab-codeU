@@ -63,10 +63,41 @@ public class ListSorter<T> {
 	 * @return
 	 */
 	public List<T> mergeSort(List<T> list, Comparator<T> comparator) {
-        // FILL THIS IN!
-        return null;
+        if (list.size() <= 1 || list == null) {
+        	return list;
+        }
+        List<T> firstHalf = mergeSort(new LinkedList<T>(list.subList(0,list.size()/2)), comparator);
+		List<T> secondHalf = mergeSort(new LinkedList<T>(list.subList(list.size()/2,list.size())), comparator);
+		return mergeSortHelper(firstHalf, secondHalf, comparator);
 	}
 
+	public List<T> mergeSortHelper(List<T> leftList, List<T> rightList, Comparator<T> comparator) {
+		int total = leftList.size()+rightList.size();
+		List<T> newList = new LinkedList<T>();
+		for (int i=0; i<total; i++) {
+			if (leftList.size()==0){
+				newList.add(i, rightList.get(0));
+				rightList.remove(0);
+			}
+			else if (rightList.size()==0) {
+				newList.add(i, leftList.get(0));
+				leftList.remove(0);
+			}
+			else if (comparator.compare(leftList.get(0), rightList.get(0))<=0) {
+				newList.add(i, leftList.get(0));
+				leftList.remove(0);
+			}
+			else if (comparator.compare(leftList.get(0), rightList.get(0))>0) {
+				newList.add(i, rightList.get(0));
+				rightList.remove(0);
+			}
+			else {
+				newList.add(i, leftList.get(0));
+				leftList.remove(0);
+			}
+		}
+		return newList;
+	}
 	/**
 	 * Sorts a list using a Comparator object.
 	 * 
@@ -75,7 +106,16 @@ public class ListSorter<T> {
 	 * @return
 	 */
 	public void heapSort(List<T> list, Comparator<T> comparator) {
-        // FILL THIS IN!
+		if (list!=null) {
+	        PriorityQueue<T> queue = new PriorityQueue<T>(list.size(), comparator);
+	        for (T element: list) {
+	        	queue.offer(element);
+	        }
+	        list.clear();
+	        while (!queue.isEmpty()) {
+	        	list.add(queue.poll());
+	        }
+	    }
 	}
 
 	
@@ -89,8 +129,23 @@ public class ListSorter<T> {
 	 * @return
 	 */
 	public List<T> topK(int k, List<T> list, Comparator<T> comparator) {
-        // FILL THIS IN!
-        return null;
+        PriorityQueue<T> queue = new PriorityQueue<T>(list.size(), comparator);
+        for (T element: list) {
+        	if (queue.size() < k) {
+	        	queue.offer(element);
+        	} else {
+        		int comp = comparator.compare(element, queue.peek());
+        		if (comp>0) {
+        			queue.poll();
+        			queue.offer(element);
+        		}
+        	}
+	    }
+	    List<T> newList = new LinkedList<T>();
+	    while (!queue.isEmpty()) {
+	        newList.add(queue.poll());
+	    }
+        return newList;
 	}
 
 	
